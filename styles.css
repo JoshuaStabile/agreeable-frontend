@@ -1,0 +1,45 @@
+.agreeable-highlighted-sentence {
+    position: relative;
+    display: inline-block;
+    z-index: 0; /* ensure it stacks under text */
+    overflow: hidden;
+}
+
+.agreeable-highlighted-sentence::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 0, 0.4);
+    z-index: -1; /* so text is on top */
+    transform: translateX(-100%);
+    animation: highlightSweep 1s ease-out forwards;
+}
+
+.agreeable-highlighted-sentence:hover::before {
+    background-color: rgba(255, 255, 0, 0.7);
+}
+
+@keyframes highlightSweep {
+    to {
+        transform: translateX(0%);
+    }
+}
+
+#agreeable-popup {
+    position: absolute;
+    max-width: 300px;
+    background: #fffef3;
+    border: 1px solid #ddd;
+    border-left: 4px solid #ffc107;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    font-family: sans-serif;
+    font-size: 14px;
+    z-index: 9999;
+    display: none;
+    transition: opacity 0.2s ease;
+}
