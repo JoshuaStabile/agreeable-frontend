@@ -113,16 +113,16 @@
     color: white;
   }
 
-  /* Scrollbar style for #result */
-  #result::-webkit-scrollbar {
+  /* Scrollbar style for #summary-container */
+  #summary-container::-webkit-scrollbar {
     width: 8px;
   }
 
-  #result::-webkit-scrollbar-track {
+  #summary-container::-webkit-scrollbar-track {
     background: #222;
   }
 
-  #result::-webkit-scrollbar-thumb {
+  #summary-container::-webkit-scrollbar-thumb {
     background-color: #4caf50;
     border-radius: 4px;
   }

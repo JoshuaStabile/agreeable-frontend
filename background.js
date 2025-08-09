@@ -4,12 +4,8 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case "open_popup":
-            // store the document text for the popup to use
-            chrome.storage.local.set({ documentText: message.text }, () => {
-                console.log("Document text saved for popup");
-                chrome.action.openPopup();
-            });
-            break;
+            chrome.action.openPopup();
+            return false;
 
         case "review_document":
             sendResponse({ success: true, result: generateDummyData() });    
@@ -35,11 +31,11 @@ function generateDummyData() {
         "mainSummary": "This is a Licensed Application End User License Agreement (EULA) that governs...",
         "highlights": [
             {
-                "id": "20",
+                "text": "Licensor grants to you a nontransferable license to use the Licensed Application",
                 "summary": "This sentence establishes that you don't actually own the apps"
             },
             {
-                "id": "30",
+                "text": "and your license to any Third Party App under this Standard EULA ",
                 "summary": "This clause uses broad language to reserve 'all rights'"
             }
         ]

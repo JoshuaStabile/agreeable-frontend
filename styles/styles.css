@@ -1,11 +1,12 @@
-.agreeable-highlighted-sentence {
+.agreeable-highlight {
     position: relative;
     display: inline-block;
     z-index: 0; /* ensure it stacks under text */
     overflow: hidden;
+    cursor: pointer;
 }
 
-.agreeable-highlighted-sentence::before {
+.agreeable-highlight::before {
     content: '';
     position: absolute;
     top: 0;
@@ -18,7 +19,7 @@
     animation: highlightSweep 1s ease-out forwards;
 }
 
-.agreeable-highlighted-sentence:hover::before {
+.agreeable-highlight:hover::before {
     background-color: rgba(255, 255, 0, 0.7);
 }
 
