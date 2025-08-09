@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Agreeable</title>
+    <link rel="stylesheet" href="./popup.css">
+</head>
+<body>
+    <header>Agreeable</header>
+
+    <main>
+        <p id="statusText"></p> <!--EULA detected. Ready to analyze.-->
+
+        <div id="summary-container" aria-live="polite" aria-atomic="true"></div>
+    </main>
+
+    <footer>
+        <button id="selectBtn" aria-label="Highlight text on the page to analyze">Free Select</button>
+
+        <button id="reviewBtn" aria-label="Analyze terms with AI">Analyze</button>
+
+        <div class="right-tabs" role="tablist" aria-label="Additional options">
+        <button class="tab-button active" role="tab" aria-selected="true" aria-controls="optionsPanel" id="optionsTab">Options</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="aboutPanel" id="aboutTab">About</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="donatePanel" id="donateTab">Donate</button>
+        </div>
+    </footer>
+
+    <script src="popup.js"></script>
+</body>
+</html>

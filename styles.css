@@ -28,7 +28,7 @@
     }
 }
 
-#agreeable-popup {
+#agreeable-highlight-container {
     position: absolute;
     max-width: 300px;
     background: #fffef3;
@@ -41,5 +41,6 @@
     font-size: 14px;
     z-index: 9999;
     display: none;
-    transition: opacity 0.2s ease;
+    pointer-events: auto;
+    transition: 'opacity 0.3s ease, visibility 0.3s ease';
 }

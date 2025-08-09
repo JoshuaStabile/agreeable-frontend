@@ -2,11 +2,12 @@
   "manifest_version": 3,
   "name": "Agreeable",
   "version": "1.0",
-  "permissions": ["scripting", "activeTab"],
+  "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
 
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -15,5 +16,9 @@
       "run_at": "document_idle",
       "css": ["styles.css"]
     }
-  ]
+  ],
+  "action": {
+    "default_popup": "./popup/popup.html",
+    "default_title": "Agreeable"
+  }
 }
