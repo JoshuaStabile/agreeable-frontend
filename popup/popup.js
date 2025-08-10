@@ -1,61 +1,114 @@
-function sendContentMessage(action, data) {
-    return new Promise((resolve, reject) => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tabId = tabs[0]?.id;
-        if (!tabId) {
-            reject(new Error("No active tab found"));
-            return;
+import { sendContentMessage, sendBackgroundMessage, getFromStorage, removeFromStorage } from "./chromeUtils.js";
+
+const summaryContainer = document.getElementById("summary-container");
+const statusElm = document.getElementById("statusText");
+const body = document.getElementById('popup-body');
+const expandBtn = document.getElementById('expandBtn');
+const reviewBtn = document.getElementById('reviewBtn');
+const freeSelectBtn = document.getElementById('freeSelectBtn');
+
+function full() {
+    body.classList.remove('compact');
+    body.classList.add('full');
+
+    freeSelectBtn.style.display = "block";
+    reviewBtn.style.display = "block"; // always show
+    expandBtn.style.display = "none";
+}
+
+function compact() {
+    body.classList.remove('full');
+    body.classList.add('compact');
+
+    freeSelectBtn.style.display = "none";
+    reviewBtn.style.display = "block"; // always show
+    expandBtn.style.display = "block";   
+}
+
+function writeToSummaryContainer(html) {
+    summaryContainer.innerHTML = ''; // Clear container
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    async function processNodes(nodes, parent) {
+        for (const node of nodes) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                await typeText(node.textContent, parent);
+            } 
+            else if (node.nodeType === Node.ELEMENT_NODE) {
+                const el = document.createElement(node.tagName);
+
+                // Copy attributes
+                for (const attr of node.attributes) {
+                    el.setAttribute(attr.name, attr.value);
+                }
+
+                parent.appendChild(el);
+
+                // If this is a <li>, add listeners here
+                if (el.tagName === 'LI') {
+                    attachPopupContainerListeners(el);
+                }
+
+                await processNodes(node.childNodes, el);
+            }
         }
-        chrome.tabs.sendMessage(tabId, { action, data }, (response) => {
-            console.log(action, data);
-            if (chrome.runtime.lastError) {
-                reject(new Error(chrome.runtime.lastError.message));
-            } else {
-                resolve(response);
+    }
+
+    // Helper to type out text word-by-word with delay
+    function typeText(text, parent) {
+        return new Promise(resolve => {
+        const words = text.split(/\s+/).filter(w => w.length > 0);
+        let index = 0;
+
+        function addWord() {
+            if (index < words.length) {
+                // Append space if needed
+                if (parent.lastChild && parent.lastChild.nodeType === Node.TEXT_NODE) {
+                    parent.lastChild.textContent += (index === 0 ? '' : ' ') + words[index];
+                } 
+                else {
+                    parent.appendChild(document.createTextNode(words[index]));
+                }
+                index++;
+                setTimeout(addWord, 100);
+            } 
+            else {
+                resolve();
             }
+        }
+
+        addWord();
         });
-        });
-    });
+    }
+
+    processNodes(tempDiv.childNodes, summaryContainer);
 }
 
-function sendBackgroundMessage(action, data) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({ action, data }, (response) => {
-            if (chrome.runtime.lastError) {
-                reject(new Error(chrome.runtime.lastError.message));
-            } else {
-                resolve(response);
-            }
-        });
-    });
-}
+expandBtn.addEventListener('click', full);
 
-function getFromStorage(key) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(key, (result) => {
-      resolve(result[key]);
-    });
-  });
-}
+document.addEventListener("DOMContentLoaded", async () => {
+    compact();
 
+    if (await getFromStorage("documentText")) {
+        statusElm.innerHTML = `Text loaded`;
+    }
 
-document.addEventListener("DOMContentLoaded", () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    if (!tabs[0]?.url) return;
-    const currentUrl = tabs[0].url;
+        if (!tabs[0]?.url) return;
+        const currentUrl = tabs[0].url;
 
-    chrome.storage.local.get("storedPopupData", ({ storedPopupData }) => {
-        if (storedPopupData && storedPopupData.url === currentUrl && storedPopupData.popupData) {
-            // We have saved data for this page, show it
-            const popupText = getPopupText(storedPopupData.popupData);
-            const summaryContainer = document.getElementById("summary-container");
-            summaryContainer.innerHTML = popupText;
-            attachPopupContainerListeners();
+        chrome.storage.local.get("storedPopupData", ({ storedPopupData }) => {
+            if (storedPopupData && storedPopupData.url === currentUrl && storedPopupData.popupData) {
+                // We have saved data for this page, show it
+                const popupText = getPopupText(storedPopupData.popupData);
+                writeToSummaryContainer(popupText);
 
-            // Also send highlights & summary to content script to highlight on page
-            sendContentMessage("load_response", storedPopupData.popupData);
-        }
-    });
+                // Also send highlights & summary to content script to highlight on page
+                sendContentMessage("load_response", storedPopupData.popupData);
+            }
+        });
     });
 
 });
@@ -65,94 +118,86 @@ document.getElementById("freeSelectBtn").addEventListener("click", () => {
     window.close(); // closes popup so the user can select freely
 });
 
-function safeJsonParse(str) {
-    try {
-        // Remove markdown code fences if they slip in
-        const cleanStr = str
-            .replace(/```json/gi, '')
-            .replace(/```/g, '')
-            .trim();
-        return JSON.parse(cleanStr);
-    } catch (e) {
-        console.error("JSON parse error:", e, str);
-        return null;
-    }
-}
+
+
 
 
 document.getElementById("reviewBtn").addEventListener("click", async () => {
-    const summaryContainer = document.getElementById("summary-container");
-    summaryContainer.innerHTML = "Formatting document...";
+    // Show thinking state
+    summaryContainer.innerHTML = `
+        <div class="ai-thinking">
+            <span>AI reviewing document</span>
+            <div class="thinking-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `;
+
+    statusText.textContent = "Reviewing with AI...";
+    statusText.classList.add('status-active');
+
+    full();
 
     try {
         const documentText = await getFromStorage("documentText");
         console.log(documentText);
 
         if (!documentText) {
-            // Send get_document message and wait for response
-            const documentResponse = await sendContentMessage("get_document_text", documentText);
-            console.log(documentResponse);
-            if (!documentResponse?.text) {
-                summaryContainer.innerHTML = "No relevant EULA or agreement found.";
-                return;
-            }
+            writeToSummaryContainer("No relevant EULA or agreement found.");
+            return;
         }
         
         // cleanDocumentText();
-
-        summaryContainer.innerHTML = "Reviewing...";
 
         // Send review_document message and wait for response
         const reviewResponse = await sendBackgroundMessage("review_document", documentText);
 
         if (reviewResponse?.success) {
             const parsedData = safeJsonParse(reviewResponse.result);
-            summaryContainer.innerHTML = getPopupText(parsedData);
-            attachPopupContainerListeners();
+            const popupText = getPopupText(parsedData);
+            writeToSummaryContainer(popupText);
+
             await sendContentMessage("load_response", parsedData);
             storePopupData(parsedData);
+
+            statusText.textContent = "Analysis complete";
+            await removeFromStorage("documentText");
         } else {
-            summaryContainer.innerHTML = `Error: ${reviewResponse?.error || "Unknown error"}`;
+            writeToSummaryContainer(`Error: ${reviewResponse?.error || "Unknown error"}`);
         }
     } catch (err) {
         console.error(err);
-        summaryContainer.innerHTML = `Error: ${err.message || err}`;
+        writeToSummaryContainer(`Error: ${err.message || err}`);
     }
 });
 
 function getPopupText(data) {
-  return `
-    <b>Main Summary:</b>
-    <p>${data.mainSummary || 'No Summary'}</p>
+    return `
+        <b>Main Summary:</b>
+        <p>${data.mainSummary || 'No Summary'}</p>
 
-    <b>Highlights</b>
-    <ol>
-      ${
-        (data.highlights || [])
-          .map(highlight => `
-            <li data-agreeable-sentence-id="${highlight.id}">${highlight.summary || ''}</li>
-          `)
-          .join('')
-      }
-    </ol>
-  `;
+        <b>Highlights</b>
+        <ol>
+        ${
+            (data.highlights || [])
+            .map(highlight => `
+                <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}">${highlight.summary || ''}</li>
+            `)
+            .join('')
+        }
+        </ol>
+    `;
 }
 
-function attachPopupContainerListeners() {
-    document.querySelectorAll('li[data-agreeable-sentence-id]').forEach(li => {
-        li.style.cursor = 'pointer';
+function attachPopupContainerListeners(li) {
+    li.addEventListener('click', () => {
+        const id = li.getAttribute('data-agreeable-highlight-id');
+        if (!id) return;
 
-        li.addEventListener('click', () => {
-            const sentenceId = li.getAttribute('data-agreeable-sentence-id');
-            const sentenceSummary = li.textContent;
-
-            if (!sentenceId || !sentenceSummary) return;
-
-            const data = { sentenceId, sentenceSummary };
-
-            // Send message to content script to highlight sentence
-            sendContentMessage("highlight_sentence", data);
-        });
+        // Send message to content script to highlight sentence
+        sendContentMessage("highlight_text", id);
     });
 }
 
@@ -169,4 +214,18 @@ function storePopupData(popupData) {
             }
         });
     });
+}
+
+function safeJsonParse(str) {
+    try {
+        // Remove markdown code fences if they slip in
+        const cleanStr = str
+            .replace(/```json/gi, '')
+            .replace(/```/g, '')
+            .trim();
+        return JSON.parse(cleanStr);
+    } catch (e) {
+        console.error("JSON parse error:", e, str);
+        return null;
+    }
 }

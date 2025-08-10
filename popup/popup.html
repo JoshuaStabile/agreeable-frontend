@@ -5,27 +5,58 @@
     <title>Agreeable</title>
     <link rel="stylesheet" href="./popup.css">
 </head>
-<body>
-    <header>Agreeable</header>
+<body class="compact" id="popup-body">
+    <header>
+        <div>
+            <div class="app-title">Agreeable</div>
+            <div class="tagline">AI Document Summarizer</div>
+        </div>
+    </header>
+
+    <div class="detection-alert">
+        <span class="detection-icon">📄</span>
+        Agreement detected on this page
+    </div>
 
     <main>
-        <p id="statusText">No text loaded</p> <!--EULA detected. Ready to analyze.-->
+        <p id="statusText">Ready to analyze documents</p>
 
-        <div id="summary-container" aria-live="polite" aria-atomic="true"></div>
+        <div id="summary-container" aria-live="polite" aria-atomic="true" class="fade-in">
+            <div class="summary-placeholder">
+                Select text or click Analyze to get started with AI-powered document insights
+            </div>
+        </div>
     </main>
 
     <footer>
-        <button id="freeSelectBtn" aria-label="Highlight text on the page to analyze">Free Select</button>
+        <!-- actions -->
+        <div class="actions">
+            <button id="reviewBtn" class="btn-primary" aria-label="Analyze terms with AI">
+                Review Agreement
+            </button>
+            <button id="freeSelectBtn" class="btn-secondary" aria-label="Highlight text on the page to analyze">
+                Free Select
+            </button>
 
-        <button id="reviewBtn" aria-label="Analyze terms with AI">Analyze</button>
-
-        <div class="right-tabs" role="tablist" aria-label="Additional options">
-        <button class="tab-button active" role="tab" aria-selected="true" aria-controls="optionsPanel" id="optionsTab">Options</button>
-        <button class="tab-button" role="tab" aria-selected="false" aria-controls="aboutPanel" id="aboutTab">About</button>
-        <button class="tab-button" role="tab" aria-selected="false" aria-controls="donatePanel" id="donateTab">Donate</button>
+            <!-- Compact only -->
+            <button id="expandBtn" class="btn-expand" aria-label="Expand to full view" title="Expand">
+                Expand
+            </button>
         </div>
     </footer>
 
-    <script src="popup.js"></script>
+    <script src="popup.js" type="module"></script>
 </body>
 </html>
+
+<!--<nav class="tab-nav" role="tablist" aria-label="Additional options">
+    <button class="tab-button active" role="tab" aria-selected="true" aria-controls="optionsPanel" id="optionsTab">
+        Options
+    </button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="aboutPanel" id="aboutTab">
+        About
+    </button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="donatePanel" id="donateTab">
+        Donate
+    </button>
+</nav>-->

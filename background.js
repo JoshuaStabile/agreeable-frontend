@@ -31,10 +31,12 @@ function generateDummyData() {
         "mainSummary": "This is a Licensed Application End User License Agreement (EULA) that governs...",
         "highlights": [
             {
+                "id": 1,
                 "text": "Licensor grants to you a nontransferable license to use the Licensed Application",
                 "summary": "This sentence establishes that you don't actually own the apps"
             },
             {
+                "id": 2,
                 "text": "and your license to any Third Party App under this Standard EULA ",
                 "summary": "This clause uses broad language to reserve 'all rights'"
             }

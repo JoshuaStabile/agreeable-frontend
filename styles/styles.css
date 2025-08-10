@@ -1,4 +1,6 @@
-.agreeable-highlight {
+mark.agreeable-highlight {
+    background-color: transparent !important;
+    color: inherit !important;
     position: relative;
     display: inline-block;
     z-index: 0; /* ensure it stacks under text */
@@ -6,42 +8,33 @@
     cursor: pointer;
 }
 
-.agreeable-highlight::before {
+mark.agreeable-highlight::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(255, 255, 0, 0.4);
+    background-color: rgba(255, 207, 0, 0.4) !important;
     z-index: -1; /* so text is on top */
     transform: translateX(-100%);
     animation: highlightSweep 1s ease-out forwards;
+    transition: background-color 0.1s ease;
 }
 
-.agreeable-highlight:hover::before {
-    background-color: rgba(255, 255, 0, 0.7);
+mark.agreeable-highlight.clicked::before {
+    background-color: rgba(255, 207, 0, 0.7) !important;
+    transform: translateX(0%);
+    animation-play-state: paused;
 }
+
+mark.agreeable-highlight:not(.clicked):hover::before {
+    background-color: rgba(255, 207, 0, 0.7) !important;
+}
+
 
 @keyframes highlightSweep {
     to {
         transform: translateX(0%);
     }
-}
-
-#agreeable-highlight-container {
-    position: absolute;
-    max-width: 300px;
-    background: #fffef3;
-    border: 1px solid #ddd;
-    border-left: 4px solid #ffc107;
-    padding: 12px 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    font-family: sans-serif;
-    font-size: 14px;
-    z-index: 9999;
-    display: none;
-    pointer-events: auto;
-    transition: 'opacity 0.3s ease, visibility 0.3s ease';
 }

@@ -3,10 +3,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         case "load_response":
             loadResponse(message.data);
             sendResponse({ success: true });
+            break;
 
         case "highlight_text":
             highlightText(message.data);
             sendResponse({ success: true });
+            break;
             
     }
 });
@@ -24,11 +26,14 @@ function loadResponse(data) {
     markInstance.unmark({
         done: () => {
         // Highlight all texts from LLM response
-        highlights.forEach(({ text, summary }) => {
+        highlights.forEach(({ id, text, summary }) => {
             markInstance.mark(text, {
             className: "agreeable-highlight",
             separateWordSearch: false,
             acrossElements: true,
+            each: (element) => {
+                element.setAttribute("data-agreeable-highlight-id", id);
+            },
             done: () => {
                 // Attach tooltip to newly created highlights
                 attachTooltipToHighlights(text, summary);
@@ -37,41 +42,47 @@ function loadResponse(data) {
         });
         }
     });
-
-    // Optionally do something with mainSummary (e.g., show in UI)
-    console.log("Document summary:", mainSummary);
 }
 
 function attachTooltipToHighlights(text, summary) {
-    // Find all highlighted elements with this text (marked with .agreeable-highlight)
-    // Because mark.js wraps text in <mark> tags or spans with the class
     document.querySelectorAll('.agreeable-highlight').forEach(el => {
-        // Only attach tooltip once per element
         if (!el._tippy) {
-        tippy(el, {
-            content: summary,
-            interactive: true,
-            placement: 'right',
-            maxWidth: 300,
-            delay: [100, 200],
-        });
+            const tip = tippy(el, {
+                content: summary,
+                interactive: true,
+                placement: 'right',
+                maxWidth: 300,
+                trigger: 'mouseenter focus click',  // show on hover & click
+                hideOnClick: true,                   // auto-hide on clicking outside
+                delay: [0, 100],
+            });
+
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();      // prevent click bubbling
+                el.classList.add('clicked');
+            });
+
+            // Remove 'clicked' when tooltip hides
+            el._tippy.props.onHidden = () => {
+                el.classList.remove('clicked');
+            };
         }
     });
 }
 
-function highlightText({ text }) {
-    // Scroll to first occurrence of the text (if exists)
-    const el = document.body.innerText.includes(text)
-        ? document.evaluate(
-            `//*[contains(text(), "${text}")]`,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-        ).singleNodeValue
-        : null;
+function highlightText(id) {
+    const elm = document.querySelector(`.agreeable-highlight[data-agreeable-highlight-id="${id}"]`);
 
-    if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (elm) {
+        elm.scrollIntoView({ behavior: "smooth", block: "center" });
+        elm.classList.add('agreeable-highlight');
+
+        // show the tippy if it exists
+        if (elm._tippy) {
+            elm._tippy.show();
+        }
+    } else {
+        console.warn(`Highlight with ID ${id} not found`);
     }
 }
+
