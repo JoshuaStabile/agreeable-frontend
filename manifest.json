@@ -13,7 +13,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "./scripts/loadResponse.js", "./scripts/getDocumentText.js", "./scripts/shouldRun.js", "./scripts/content.js", "./scripts/freeSelect.js",
+        "./scripts/loadResponse.js", "./scripts/loadDocument.js", "./scripts/content.js", "./scripts/freeSelect.js",
 
         "./libs/Readability.js", "./libs/mark.min.js", "./libs/popper.min.js", "./libs/tippy-bundle.umd.min.js"
       ],

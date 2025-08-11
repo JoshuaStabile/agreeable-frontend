@@ -12,7 +12,6 @@ body {
   color: #1a1a1a;
   display: flex;
   flex-direction: column;
-  user-select: none;
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -46,7 +45,7 @@ header {
 }
 
 body.compact header {
-    padding: 1rem 1.5rem 0.5rem;
+    padding: 0.75rem 1.5rem 0.5rem;
 }
 
 body.full header {
@@ -67,30 +66,11 @@ body::before {
 }
 
 body.compact::before {
-    height: 80px;
+    height: 50px;
 }
 
 body.full::before {
-    height: 120px;
-}
-
-.logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-
-.agreeable-icon {
-    background: rgba(254, 239, 229, 0.2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    height: 100px;
 }
 
 body.compact .agreeable-icon {
@@ -136,7 +116,7 @@ body.full .tagline {
 /* Detection alert for compact mode */
 .detection-alert {
     background: rgba(255, 255, 255, 0.95);
-    margin: 0 1.5rem;
+    margin: 0 0.25rem 1rem 0.25rem;
     padding: 0.75rem;
     border-radius: 12px;
     text-align: center;
@@ -193,6 +173,7 @@ body.full main {
 #statusText {
     font-size: 0.9rem;
     color: #666;
+    margin-top: 1rem;
     margin-bottom: 1rem;
     text-align: center;
     font-weight: 500;
@@ -208,6 +189,7 @@ body.full main {
     border-radius: 16px;
     padding: 1.25rem;
     min-height: 140px;
+    max-height: 240px;
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-y: auto;
@@ -285,6 +267,7 @@ body.full footer {
   align-items: center;
   width: 100%;
   transition: all 0.4s ease;
+  gap: 0.5rem;
 }
 
 /* Button styles */
@@ -368,7 +351,8 @@ body.full .btn-primary {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 50px;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .btn-expand:hover {
@@ -428,12 +412,12 @@ body.full .btn-primary {
 }
 
 #summary-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #00916E, #FFCF00);
+    background: #00916E;
     border-radius: 3px;
 }
 
 #summary-container::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #FFCF00, #EE6123);
+    background: #00916E;
 }
 
 /* Micro-animations */

@@ -1,6 +1,15 @@
+let prevSessionId = "new";
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case "load_response":
+            console.log(message.sessionId);
+            if (prevSessionId === message.sessionId) {
+                sendResponse({ success: false });
+                return;
+            }
+            prevSessionId = message.sessionId;
+
             loadResponse(message.data);
             sendResponse({ success: true });
             break;
@@ -11,12 +20,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             break;
             
     }
+    return true;
 });
+
+function cleanText(text) {
+    if (!text) return text;
+    // replace all occurrences of \" with "
+    return text.replace(/\\"/g, '"');
+}
 
 function loadResponse(data) {
     const { mainSummary, highlights } = data;
 
-    console.log(highlights);
     if (!highlights) {
         return;
     }
@@ -25,29 +40,31 @@ function loadResponse(data) {
     const markInstance = new Mark(document.body);
     markInstance.unmark({
         done: () => {
-        // Highlight all texts from LLM response
-        highlights.forEach(({ id, text, summary }) => {
-            markInstance.mark(text, {
-            className: "agreeable-highlight",
-            separateWordSearch: false,
-            acrossElements: true,
-            each: (element) => {
-                element.setAttribute("data-agreeable-highlight-id", id);
-            },
-            done: () => {
-                // Attach tooltip to newly created highlights
-                attachTooltipToHighlights(text, summary);
-            }
+            // Highlight all texts from LLM response
+            highlights.forEach(({ id, text, summary }) => {
+                const cleanHighlightText = cleanText(text);
+
+                markInstance.mark(cleanHighlightText, {
+                    className: "agreeable-highlight",
+                    separateWordSearch: false,
+                    acrossElements: true,
+                    each: (element) => {
+                        element.setAttribute("data-agreeable-highlight-id", id);
+                    },
+                    done: () => {
+                        // Attach tooltip to newly created highlights
+                        attachTooltipToHighlights(summary);
+                    }
+                });
             });
-        });
         }
     });
 }
 
-function attachTooltipToHighlights(text, summary) {
+function attachTooltipToHighlights(summary) {
     document.querySelectorAll('.agreeable-highlight').forEach(el => {
         if (!el._tippy) {
-            const tip = tippy(el, {
+            tippy(el, {
                 content: summary,
                 interactive: true,
                 placement: 'right',
@@ -57,12 +74,10 @@ function attachTooltipToHighlights(text, summary) {
                 delay: [0, 100],
             });
 
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();      // prevent click bubbling
+            el._tippy.props.onShow = () => {
                 el.classList.add('clicked');
-            });
+            };
 
-            // Remove 'clicked' when tooltip hides
             el._tippy.props.onHidden = () => {
                 el.classList.remove('clicked');
             };
@@ -74,11 +89,13 @@ function highlightText(id) {
     const elm = document.querySelector(`.agreeable-highlight[data-agreeable-highlight-id="${id}"]`);
 
     if (elm) {
-        elm.scrollIntoView({ behavior: "smooth", block: "center" });
-        elm.classList.add('agreeable-highlight');
-
         // show the tippy if it exists
         if (elm._tippy) {
+            document.querySelectorAll(".agreeable-highlight")?.forEach(highlight => {
+                highlight._tippy?.hide();
+            });
+
+            elm.scrollIntoView({ behavior: "smooth", block: "center" });
             elm._tippy.show();
         }
     } else {

@@ -1,15 +1,18 @@
-
-
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.debug(message.action);
     switch (message.action) {
         case "open_popup":
             chrome.action.openPopup();
+            chrome.storage.local.set({ mode: message.mode });
+            sendResponse({ success: true });
             return false;
 
-        case "review_document":
-            sendResponse({ success: true, result: generateDummyData() });    
-            return true;
+        case "reset":
+            chrome.local.storage.clear();
+            break;
+
+        case "fetch_llm_response":
+            // sendResponse({ success: true, result: generateDummyData() });    return true;
             fetch("http://127.0.0.1:8000/review_document", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -24,6 +27,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
 });
+
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+    chrome.storage.local.remove('documentData', () => {
+        if (chrome.runtime.lastError) {
+            console.error("Error clearing documentData:", chrome.runtime.lastError);
+        } else {
+            console.debug("Cleared documentData on tab switch");
+        }
+    });
+});
+
 
 function generateDummyData() {
     // json string
