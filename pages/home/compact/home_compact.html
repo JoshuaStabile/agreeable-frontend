@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Agreeable</title>
+    <link rel="stylesheet" href="../../popup.css">
+    <link rel="stylesheet" href="../home.css">
+    <link rel="stylesheet" href="./home_compact.css">
+</head>
+<body class="compact" id="popup-body">
+    <header>
+        <div>
+            <div class="app-title">Agreeable</div>
+        </div>
+    </header>
+
+    <!-- only shown in condensed view -->
+    <div id="detection-alert" class="detection-alert">
+        <span class="detection-icon">📄</span>
+        Agreement detected on this page
+    </div>
+
+    <footer>
+        <!-- actions -->
+        <div class="actions">
+            <button id="reviewBtn" class="btn-primary" aria-label="Review document with AI">
+                Review Agreement
+            </button>
+            <button id="freeSelectBtn" class="btn-secondary" aria-label="Highlight text on the page to review">
+                Select Text
+            </button>
+            <button id="expandBtn" class="btn-expand" aria-label="Expand to full view" title="Expand">
+                Expand
+            </button>
+        </div>
+    </footer>
+
+    <script src="popup.js" type="module"></script>
+    <script src="compact.js" type="module"></script>
+</body>
+</html>

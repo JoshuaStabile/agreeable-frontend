@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Agreeable</title>
-    <link rel="stylesheet" href="./popup.css">
+    <link rel="stylesheet" href="../../popup.css">
+    <link rel="stylesheet" href="../home.css">
+    <link rel="stylesheet" href="./home_full.css">
 </head>
-<body class="compact" id="popup-body">
+<body class="full" id="popup-body">
     <header>
         <div>
             <div class="app-title">Agreeable</div>
@@ -13,10 +15,11 @@
         </div>
     </header>
 
-    <div class="detection-alert">
-        <span class="detection-icon">📄</span>
-        Agreement detected on this page
-    </div>
+    <nav class="quick-links">
+        <a href="#" class="selected" id="homeLink">Home</a>
+        <a href="./settings.html" id="settingsLink">Settings</a>
+        <a href="agreeable.donate.com" id="donateLink">Donate</a>
+    </nav>
 
     <main>
         <div id="summary-container" aria-live="polite" aria-atomic="true" class="fade-in">
@@ -37,26 +40,10 @@
             <button id="freeSelectBtn" class="btn-secondary" aria-label="Highlight text on the page to review">
                 Select Text
             </button>
-
-            <!-- Compact only -->
-            <button id="expandBtn" class="btn-expand" aria-label="Expand to full view" title="Expand">
-                Expand
-            </button>
         </div>
     </footer>
 
     <script src="popup.js" type="module"></script>
+    <script src="full.js" type="module"></script>
 </body>
 </html>
-
-<!--<nav class="tab-nav" role="tablist" aria-label="Additional options">
-    <button class="tab-button active" role="tab" aria-selected="true" aria-controls="optionsPanel" id="optionsTab">
-        Options
-    </button>
-    <button class="tab-button" role="tab" aria-selected="false" aria-controls="aboutPanel" id="aboutTab">
-        About
-    </button>
-    <button class="tab-button" role="tab" aria-selected="false" aria-controls="donatePanel" id="donateTab">
-        Donate
-    </button>
-</nav>-->

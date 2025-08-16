@@ -4,7 +4,9 @@
   "version": "1.0",
   "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
-
+  "icons": {
+    "128": "./icons/agreeable-icon-128.png"
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -22,7 +24,7 @@
     }
   ],
   "action": {
-    "default_popup": "./popup/popup.html",
+    "default_popup": "./pages/popup.html",
     "default_title": "Agreeable"
   }
 }

@@ -1,0 +1,54 @@
+/* Full mode styling */
+body {
+    height: 520px;
+    width: 380px;
+}
+
+body::before {
+    height: 120px;
+}
+
+body header {
+    padding: 1.5rem 1.5rem 1rem;
+}
+
+body::before {
+    height: 100px;
+}
+
+
+body .app-title {
+    font-size: 1.6rem;
+}
+
+.tagline {
+    font-size: 0.8rem;
+    color: rgba(254, 239, 229, 0.9);
+    font-weight: 400;
+    margin-top: 0.25rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+body .tagline {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body main {
+    padding: 1.5rem;
+    opacity: 1;
+    height: auto;
+    pointer-events: all;
+}
+
+body .btn-primary {
+    font-size: 0.85rem;
+    padding: 0.75rem 1.25rem;
+}
+
+body footer {
+    padding: 1.25rem 1.5rem;
+    justify-content: space-between;
+}

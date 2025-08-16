@@ -71,7 +71,7 @@ function attachTooltipToHighlights(summary) {
                 maxWidth: 300,
                 trigger: 'mouseenter focus click',  // show on hover & click
                 hideOnClick: true,                   // auto-hide on clicking outside
-                delay: [0, 100],
+                delay: [0, 0],
             });
 
             el._tippy.props.onShow = () => {

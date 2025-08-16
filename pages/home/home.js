@@ -1,4 +1,4 @@
-import { sendContentMessage, sendBackgroundMessage, get, set, getOutputCache, setOutputCache, removeFromStorage } from "./utils/chromeUtils.js";
+import { sendContentMessage, sendBackgroundMessage, get, set, getOutputCache, setOutputCache, removeFromStorage } from "../utils/chromeUtils.js";
 import { full, compact, safeJsonParse, getPopupText, writeToSummaryContainer } from "./utils/popupUtils.js";
 
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
@@ -17,10 +17,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 
-const summaryContainer = document.getElementById("summary-container");
 const statusElm = document.getElementById("statusText");
-const body = document.getElementById('popup-body');
-const expandBtn = document.getElementById('expandBtn');
 const reviewBtn = document.getElementById('reviewBtn');
 const freeSelectBtn = document.getElementById('freeSelectBtn');
 
@@ -32,6 +29,7 @@ async function startFreeSelect() {
 
 async function reviewDocument() {
     console.debug("reviewDocument started");
+    
     // show thinking state
     writeToSummaryContainer(`
         <div class="ai-thinking">
@@ -47,7 +45,7 @@ async function reviewDocument() {
     statusElm.textContent = "Reviewing with AI...";
     statusElm.classList.add('status-active');
 
-    full();
+    
     try {
         let documentData = await get("documentData");
         
@@ -92,55 +90,16 @@ async function reviewDocument() {
     }
 }
 
-async function initPopup() {
-    console.debug("Initializing popup");
-    let mode = await get("mode");
-    console.debug("Popup mode from storage:", mode);
-    removeFromStorage("mode");
-
-    const popupData = await getOutputCache();
-    console.debug("Popup data retrieved:", popupData);
-    if (popupData) {
-        full();
-        statusElm.innerHTML = `Review finished`;
-        writeToSummaryContainer(getPopupText(popupData), false);
-        sendContentMessage("load_response", popupData );
-    }
-    else {
-        if (mode === "compact") {
-            console.debug("Setting popup to compact mode");
-            compact();
-        }
-        else {
-            console.debug("Setting popup to full mode");
-            full();
-        }
-    }
-
-    const documentData = await get("documentData");
-    if (documentData) {
-        if (documentData.src === "freeSelect") {
-            statusElm.innerHTML = `Ready to review <i>selected text</i>`;
-        }
-        else {
-            statusElm.innerHTML = `Ready to review <i>page</i>`;
-        }
-        
-        console.debug("Document text found in storage at init");
-    }
-}
-
-expandBtn.addEventListener('click', () => {
-    console.debug("Expand button clicked");
-    full();
-});
 freeSelectBtn.addEventListener("click", async () => {
     console.debug("Free select button clicked");
     await startFreeSelect();
 });
 reviewBtn.addEventListener("click", () => {
     console.debug("Review button clicked");
+
+    // on review document, set to full
+    full();
+
     reviewDocument();
 });
 
-initPopup();

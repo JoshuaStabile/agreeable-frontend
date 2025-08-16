@@ -1,28 +1,14 @@
 import { sendContentMessage } from "./chromeUtils.js";
+import { PAGES, setPage } from "../pages.js";
 
 const summaryContainer = document.getElementById("summary-container");
-const statusElm = document.getElementById("statusText");
-const body = document.getElementById('popup-body');
-const expandBtn = document.getElementById('expandBtn');
-const reviewBtn = document.getElementById('reviewBtn');
-const freeSelectBtn = document.getElementById('freeSelectBtn');
 
 export function full() {
-    body.classList.remove('compact');
-    body.classList.add('full');
-
-    freeSelectBtn.style.display = "block";
-    reviewBtn.style.display = "block"; // always show
-    expandBtn.style.display = "none";
+    setPage("home_full");
 }
 
 export function compact() {
-    body.classList.remove('full');
-    body.classList.add('compact');
-
-    freeSelectBtn.style.display = "none";
-    reviewBtn.style.display = "block"; // always show
-    expandBtn.style.display = "block";   
+    setPage("home_compact");  
 }
 
 export function getPopupText(data) {

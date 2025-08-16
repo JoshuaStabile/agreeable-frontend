@@ -3,7 +3,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case "open_popup":
             chrome.action.openPopup();
-            chrome.storage.local.set({ mode: message.mode });
+            chrome.storage.local.set({ page: message.page });
             sendResponse({ success: true });
             return false;
 

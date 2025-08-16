@@ -57,13 +57,15 @@ function shouldRun() {
 }
 
 window.addEventListener("load", () => {
+    const agreementDetected = shouldRun();
+
     // check if the program should even run
-    if (!shouldRun()) {
+    if (!agreementDetected) {
         return;
     }
 
     loadDocument();
 
     // open popup
-    chrome.runtime.sendMessage({ action: "open_popup", mode: "compact" });
+    chrome.runtime.sendMessage({ action: "open_popup", page: "home_compact" });
 });
