@@ -1,14 +1,24 @@
 import { sendContentMessage } from "./chromeUtils.js";
-import { PAGES, setPage } from "../pages.js";
 
 const summaryContainer = document.getElementById("summary-container");
+const toggleSizeBtn = document.getElementById("toggleSizeBtn");
 
 export function full() {
-    setPage("home_full");
+    document.body.classList.remove('compact');
+    document.body.classList.add('full');
+
+    toggleSizeBtn.innerHTML = `
+        <i class="fas fa-angle-down"></i>
+    `;
 }
 
 export function compact() {
-    setPage("home_compact");  
+    document.body.classList.remove('full');
+    document.body.classList.add('compact');
+
+    toggleSizeBtn.innerHTML = `
+        <i class="fas fa-angle-up"></i>
+    `;  
 }
 
 export function getPopupText(data) {
@@ -22,7 +32,7 @@ export function getPopupText(data) {
         ${
             (data.highlights || [])
             .map(highlight => `
-                <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}">${highlight.summary || ''}</li>
+                <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}" data-agreeable-severity=${highlight.severity}>${highlight.summary || ''}</li>
             `)
             .join('')
         }

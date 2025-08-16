@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>Agreeable – Settings</title>
     <link rel="stylesheet" href="../popup.css">
-    <link rel="stylesheet" href="./settings.css">
+    <link rel="stylesheet" href="./donate.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 </head>
@@ -22,32 +22,26 @@
     <main>
         <nav class="quick-links">
             <a href="#" id="homeLink">Home</a>
-            <a href="#" id="settingsLink" class="selected" >Settings</a>
-            <a href="#" id="donateLink">Donate</a>
+            <a href="#" id="settingsLink">Settings</a>
+            <a href="#" id="donateLink" class="selected" >Donate</a>
         </nav>
 
-        <div class="setting-group">
-            <label>Automatic agreement detection sensitivity</label>
-            <select id="sensitivity-select">
-                <option value="0">None (Disabled)</option>
-                <option value="90">Low</option>
-                <option value="80" selected>Medium</option>
-                <option value="70">High</option>
-            </select>
-        </div>
+        <p>
+            This is an open-source free passion project of mine. 
+            I am allotting some of my moneys to this each month so the AI does not evict me. 
+            If you find this useful, consider sending over some moneys by clicking the link below.
+        </p>
 
-        <div class="setting-group">
-            <label>Custom Prompt</label>
-            <textarea id="custom-prompt" placeholder="Enter a prompt (e.g. what you consider to be most important when summarizing EULA agreements)"></textarea>
-        </div>
+        <a href="https://ko-fi.com/agreeableapp">ko-fi</a>
     </main>
 
     <footer>
         <div style="margin:0 auto;text-align:center;">
             <p>Agreeable - v1.0</p>
         </div>
+        
         <script src="../quickLinks.js" type="module"></script>
-        <script src="./settings.js" type="module"></script>
+        <script src="./donate.js" type="module"></script>
     </footer>
 
 </body>

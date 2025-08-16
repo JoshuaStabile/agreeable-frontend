@@ -11,7 +11,7 @@ export function sendContentMessage(action, data) {
 
             chrome.tabs.sendMessage(tabId, { action, data, sessionId }, (response) => {
                 if (chrome.runtime.lastError) {
-                    reject(new Error(action, chrome.runtime.lastError.message));
+                    reject(new Error(`Action: ${action}\nMessage: ${chrome.runtime.lastError.message}`));
                 } else {
                     resolve(response);
                 }

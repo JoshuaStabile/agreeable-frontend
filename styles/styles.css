@@ -7,11 +7,36 @@ mark.agreeable-highlight {
     overflow: hidden;
     cursor: pointer;
 
-    /* Color variable so hover changes don’t affect animation state */
-    --highlight-color: rgba(255, 207, 0, 0.4);
+    /* Default (fallback) */
+    --highlight-color: #FFCF00;
+    --highlight-opacity: 0.4;
 }
 
-/* Run animation exactly once here */
+/* None = green (#00916E) */
+mark.agreeable-highlight[data-agreeable-severity="helpful"] {
+    --highlight-color: #00916E;
+    --highlight-opacity: 0.35;
+}
+
+/* Low = yellow (#FFCF00) */
+mark.agreeable-highlight[data-agreeable-severity="low"] {
+    --highlight-color: #FFCF00;
+    --highlight-opacity: 0.4;
+}
+
+/* Medium = orange (#EE6123) */
+mark.agreeable-highlight[data-agreeable-severity="medium"] {
+    --highlight-color: #EE6123;
+    --highlight-opacity: 0.4;
+}
+
+/* High = red (#FA003F) */
+mark.agreeable-highlight[data-agreeable-severity="high"] {
+    --highlight-color: #FA003F;
+    --highlight-opacity: 0.35;
+}
+
+/* Highlight background animation */
 mark.agreeable-highlight::before {
     content: '';
     position: absolute;
@@ -19,21 +44,22 @@ mark.agreeable-highlight::before {
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: var(--highlight-color) !important;
+    background-color: var(--highlight-color);
+    opacity: var(--highlight-opacity);
     z-index: -1;
     transform: translateX(-100%);
     animation: highlightSweep 1s ease-out forwards;
     animation-fill-mode: forwards;
-    pointer-events: none; /* don't interfere with hover */
+    pointer-events: none;
 }
 
-/* Hover changes the variable only, never touches ::before */
-mark.agreeable-highlight:not(.clicked):hover {
-    --highlight-color: rgba(255, 207, 0, 0.7);
+/* Hover only increases opacity */
+mark.agreeable-highlight:not(.clicked):hover::before {
+    opacity: calc(var(--highlight-opacity) + 0.2);
 }
 
-mark.agreeable-highlight.clicked {
-    --highlight-color: rgba(255, 207, 0, 0.7);
+mark.agreeable-highlight.clicked::before {
+    opacity: calc(var(--highlight-opacity) + 0.2);
 }
 
 @keyframes highlightSweep {

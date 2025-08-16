@@ -41,7 +41,7 @@ function loadResponse(data) {
     markInstance.unmark({
         done: () => {
             // Highlight all texts from LLM response
-            highlights.forEach(({ id, text, summary }) => {
+            highlights.forEach(({ id, text, summary, severity }) => {
                 const cleanHighlightText = cleanText(text);
 
                 markInstance.mark(cleanHighlightText, {
@@ -50,6 +50,7 @@ function loadResponse(data) {
                     acrossElements: true,
                     each: (element) => {
                         element.setAttribute("data-agreeable-highlight-id", id);
+                        element.setAttribute("data-agreeable-severity", severity);
                     },
                     done: () => {
                         // Attach tooltip to newly created highlights
