@@ -5,16 +5,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case "open_popup":
             chrome.action.openPopup();
-            set("mode", message.mode)
-                .then(() => sendResponse({ success: true }))
-                .catch(err => sendResponse({ success: false, error: err.toString() }));
-            return true; // keep channel open
+            return false;
 
         case "reset":
             chrome.storage.local.clear(() => {
                 if (chrome.runtime.lastError) {
                     sendResponse({ success: false, error: chrome.runtime.lastError });
                 } else {
+                    assignDefaults();
                     sendResponse({ success: true });
                 }
             });
@@ -23,9 +21,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         case "fetch_llm_response":
             get("$customPrompt")
                 .then(customPrompt => {
+                    const extensionId = chrome.runtime.id;
+
                     let body = JSON.stringify({ 
                         text: message.data,
                         customPrompt,
+                        extensionId,
                     });
 
                     console.log("Sending body:", body);
@@ -36,11 +37,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         body
                     });
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { 
+                            throw new Error(`HTTP ${response.status}: ${text}`);
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => sendResponse({ success: true, result: data }))
-                .catch(error => sendResponse({ success: false, error: error.toString() }));
+                .catch(error => {
+                    console.error("Error during fetch:", error);
+                    sendResponse({ success: false, error: error.toString() });
+                });
 
-            return true; // async response
+
+            return true; // keep async
     }
 });
 
@@ -54,6 +66,20 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     });
 });
 
+chrome.runtime.onInstalled.addListener(() => {
+    assignDefaults();
+});
+
+function assignDefaults() {
+    const DEFAULT_SENSITIVITY = "80";
+
+    chrome.storage.local.get(["$sensitivity", "$customPrompt"], (items) => {
+        if (!items.$sensitivity) {
+            chrome.storage.local.set({ "$sensitivity": DEFAULT_SENSITIVITY });
+        }
+    });
+}
+
 
 function generateDummyData() {
     // json string
@@ -64,13 +90,13 @@ function generateDummyData() {
                 "id": 1,
                 "text": "Licensor grants to you a nontransferable license to use the Licensed Application",
                 "summary": "This sentence establishes that you don't actually own the apps",
-                "severity": "yellow",
+                "severity": "medium",
             },
             {
                 "id": 2,
                 "text": "and your license to any Third Party App under this Standard EULA ",
                 "summary": "This clause uses broad language to reserve 'all rights'",
-                "severity": "yellow",
+                "severity": "medium",
             }
         ]
     }`;

@@ -1,25 +1,6 @@
 import { sendContentMessage } from "./chromeUtils.js";
 
 const summaryContainer = document.getElementById("summary-container");
-const toggleSizeBtn = document.getElementById("toggleSizeBtn");
-
-export function full() {
-    document.body.classList.remove('compact');
-    document.body.classList.add('full');
-
-    toggleSizeBtn.innerHTML = `
-        <i class="fas fa-angle-down"></i>
-    `;
-}
-
-export function compact() {
-    document.body.classList.remove('full');
-    document.body.classList.add('compact');
-
-    toggleSizeBtn.innerHTML = `
-        <i class="fas fa-angle-up"></i>
-    `;  
-}
 
 export function getPopupText(data) {
     return `

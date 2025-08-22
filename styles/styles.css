@@ -15,7 +15,7 @@ mark.agreeable-highlight {
 /* None = green (#00916E) */
 mark.agreeable-highlight[data-agreeable-severity="helpful"] {
     --highlight-color: #00916E;
-    --highlight-opacity: 0.35;
+    --highlight-opacity: 0.4;
 }
 
 /* Low = yellow (#FFCF00) */
@@ -33,7 +33,7 @@ mark.agreeable-highlight[data-agreeable-severity="medium"] {
 /* High = red (#FA003F) */
 mark.agreeable-highlight[data-agreeable-severity="high"] {
     --highlight-color: #FA003F;
-    --highlight-opacity: 0.35;
+    --highlight-opacity: 0.4;
 }
 
 /* Highlight background animation */

@@ -16,19 +16,13 @@ body {
   transition: none;
 }
 
-body.compact {
-  height: 200px;
-  width: 380px;
-}
 
-body.full {
+body {
     height: 520px;
     width: 380px;
 }
 
-/* Only transition when resizing modes */
-body.compact,
-body.full {
+body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -242,38 +236,4 @@ header, footer {
     justify-content: center;   /* horizontal centering (or space-between for footer buttons) */
     padding: 0;                /* remove padding since height is fixed */
     box-sizing: border-box;    /* keep borders inside height */
-}
-
-/* resize */
-#toggleSizeBtn {
-    position: absolute;
-    right: 4px;
-    top: 4px;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0.2rem;
-    line-height: 1;
-    z-index: 1000;
-    color: white;
-}
-#toggleSizeBtn:hover {
-    transform: scale(1.2);
-}
-
-body.compact #main-compact {
-    display: block;
-}
-
-body.compact #main-full {
-    display: none;
-}
-
-body.full #main-compact {
-    display: none;
-}
-
-body.full #main-full {
-    display: block;
 }

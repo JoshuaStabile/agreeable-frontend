@@ -36,15 +36,27 @@ function loadResponse(data) {
         return;
     }
 
-    // Clear previous highlights first if needed
+    // clear prev marks
     const markInstance = new Mark(document.body);
     markInstance.unmark({
         done: () => {
-            // Highlight all texts from LLM response
             highlights.forEach(({ id, text, summary, severity }) => {
                 const cleanHighlightText = cleanText(text);
 
-                markInstance.mark(cleanHighlightText, {
+                // escape regex special characters in the text
+                const escapedText = cleanHighlightText.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+                // Build a regex that ignores punctuation and special chars
+                // \w = word characters, \W = non-word, allow any non-word char between letters
+                const regexStr = escapedText.split('').map(ch => {
+                    if (/\w/.test(ch)) return ch;
+                    return '\\W*'; // match any non-word character 0 or more times
+                }).join('');
+
+                const regex = new RegExp(regexStr, 'gi');
+
+                // Highlight using markRegExp
+                markInstance.markRegExp(regex, {
                     className: "agreeable-highlight",
                     separateWordSearch: false,
                     acrossElements: true,
@@ -53,7 +65,6 @@ function loadResponse(data) {
                         element.setAttribute("data-agreeable-severity", severity);
                     },
                     done: () => {
-                        // Attach tooltip to newly created highlights
                         attachTooltipToHighlights(summary);
                     }
                 });
@@ -61,6 +72,7 @@ function loadResponse(data) {
         }
     });
 }
+
 
 function attachTooltipToHighlights(summary) {
     document.querySelectorAll('.agreeable-highlight').forEach(el => {
@@ -70,8 +82,6 @@ function attachTooltipToHighlights(summary) {
                 interactive: true,
                 placement: 'right',
                 maxWidth: 300,
-                trigger: 'mouseenter focus click',  // show on hover & click
-                hideOnClick: true,                   // auto-hide on clicking outside
                 delay: [0, 0],
             });
 

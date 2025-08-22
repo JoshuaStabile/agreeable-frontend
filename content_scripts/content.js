@@ -70,8 +70,6 @@ async function shouldRun() {
 window.addEventListener("load", async () => {
     const agreementDetected = await shouldRun();
 
-    console.log(agreementDetected);
-
     // check if the program should even run
     if (!agreementDetected) {
         return;
@@ -80,6 +78,5 @@ window.addEventListener("load", async () => {
     loadDocument();
 
     // open popup
-    chrome.runtime.sendMessage({ action: "open_popup", mode: "compact" });
-    
+    chrome.runtime.sendMessage({ action: "open_popup" });
 });

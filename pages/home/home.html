@@ -12,37 +12,24 @@
     <header>
         <div>
             <div class="app-title">Agreeable</div>
-            <div class="tagline">AI Document Summarizer</div>
-            <button id="toggleSizeBtn" class="btn-resize" aria-label="Toggle window size">
-                <i class="fas fa-angle-down"></i>
-            </button>
+            <div class="tagline"></div>
         </div>
     </header>
 
     <main>
-        <div id="main-compact">
-            <div class="detection-alert">
-                <span class="detection-icon">📄</span>
-                Agreement detected on this page
+        <nav class="quick-links">
+            <a href="#" id="homeLink" class="selected" >Home</a>
+            <a href="#" id="settingsLink">Settings</a>
+            <a href="#" id="donateLink">Donate</a>
+        </nav>
+
+        <div id="summary-container" aria-live="polite" aria-atomic="true" class="fade-in">
+            <div class="summary-placeholder">
+                Select text or click "Review Agreement" to get started
             </div>
         </div>
 
-        <div id="main-full">
-            <nav class="quick-links">
-                <a href="#" id="homeLink" class="selected" >Home</a>
-                <a href="#" id="settingsLink">Settings</a>
-                <a href="#" id="donateLink">Donate</a>
-            </nav>
-
-            <div id="summary-container" aria-live="polite" aria-atomic="true" class="fade-in">
-                <div class="summary-placeholder">
-                    Select text or click "Review Agreement" to get started
-                </div>
-            </div>
-
-            <p id="statusText">Ready to review documents</p>
-        </div>
-        
+        <p id="statusText">Ready to review documents</p>
     </main>
 
     <footer>

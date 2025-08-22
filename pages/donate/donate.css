@@ -1,0 +1,33 @@
+.message-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.donation-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+.donation-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFCF00;
+    color: #000;
+    text-decoration: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+.donation-link:hover {
+    background-color: #e6b800;
+}
+.donation-link i {
+    margin-right: 8px;
+}

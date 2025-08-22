@@ -2,6 +2,7 @@ import { get, set } from "../../utils/chromeUtils.js";
 
 const sensitivitySelect = document.getElementById("sensitivity-select");
 const customPromptTextarea = document.getElementById("custom-prompt");
+const resetBtn = document.getElementById("reset-extension");
 
 document.addEventListener("DOMContentLoaded", async () => {
     const sensitivity = await get("$sensitivity");
@@ -21,4 +22,16 @@ sensitivitySelect.addEventListener("change", async () => {
 
 customPromptTextarea.addEventListener("input", async () => {
     await set("$customPrompt", customPromptTextarea.value);
+});
+
+resetBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to reset the extension? All settings will be lost.")) {
+        chrome.runtime.sendMessage({ action: "reset" }, (response) => {
+            if (response?.success) {
+                window.location.reload();
+            } else {
+                alert("Failed to reset extension.");
+            }
+        });
+    }
 });

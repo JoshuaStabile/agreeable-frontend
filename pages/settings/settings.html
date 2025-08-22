@@ -12,10 +12,7 @@
     <header>
         <div>
             <div class="app-title">Agreeable</div>
-            <div class="tagline">AI Document Summarizer</div>
-            <button id="toggleSizeBtn" class="btn-resize" aria-label="Toggle window size">
-                <i class="fas fa-angle-down"></i>
-            </button>
+            <div class="tagline"></div>
         </div>
     </header>
 
@@ -31,7 +28,7 @@
             <select id="sensitivity-select">
                 <option value="0">None (Disabled)</option>
                 <option value="90">Low</option>
-                <option value="80" selected>Medium</option>
+                <option value="80">Medium</option>
                 <option value="70">High</option>
             </select>
         </div>
@@ -40,6 +37,8 @@
             <label>Custom Prompt</label>
             <textarea id="custom-prompt" placeholder="Enter a prompt (e.g. what you consider to be most important when summarizing EULA agreements)"></textarea>
         </div>
+
+        <button id="reset-extension">Reset Extension</button>
     </main>
 
     <footer>
