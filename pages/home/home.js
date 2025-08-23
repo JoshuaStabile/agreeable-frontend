@@ -29,7 +29,6 @@ async function reviewDocument() {
 
     statusElm.textContent = "";
 
-    window.getSelection().removeAllRanges();
     try {
         let documentData = await get("documentData");
         
@@ -46,7 +45,8 @@ async function reviewDocument() {
             }
         }
         let documentText = documentData.text;
-
+        console.log(documentText);
+        
         console.debug("Sending document text to background for review");
         const reviewResponse = await sendBackgroundMessage("fetch_llm_response", documentText);
 

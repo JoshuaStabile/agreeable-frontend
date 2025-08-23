@@ -1,13 +1,13 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.debug(message);
     if (message.action === "load_document") {
-        const documentData = loadDocument();
-        sendResponse({ success: true, documentData });
+        loadDocument().then((documentData) => {
+            sendResponse({ success: true, documentData });
+        });
+        return true; // keep channel open for async response
     }
-    return true;
 });
 
-function loadDocument() {
+async function loadDocument() {
     const article = new Readability(document.cloneNode(true)).parse();
     if (!article) return null;
 
@@ -18,7 +18,7 @@ function loadDocument() {
         src: "loadDocument",
     }
 
-    chrome.storage.local.set({ documentData });
-    return documentText;
+    await chrome.storage.local.set({ documentData });
+    return documentData;
 }
 

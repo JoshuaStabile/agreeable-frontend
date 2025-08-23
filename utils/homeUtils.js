@@ -11,11 +11,12 @@ export function getPopupText(data) {
         <b>Highlights:</b>
         <ol>
         ${
-            (data.highlights || [])
-            .map(highlight => `
+            data.highlights && data.highlights.length > 0 ? 
+            data.highlights.map(highlight => `
                 <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}" data-agreeable-severity=${highlight.severity}>${highlight.summary || ''}</li>
             `)
             .join('')
+            : "No Highlights"
         }
         </ol>
     `;

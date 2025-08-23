@@ -65,3 +65,32 @@ mark.agreeable-highlight.clicked::before {
 @keyframes highlightSweep {
     to { transform: translateX(0%); }
 }
+
+
+/* TIPPY */
+.tippy-box[data-theme~='agreeable'] {
+    background-color: #FEEFE5;  /* base color */
+    border: 2px solid var(--highlight-color, #00916E);
+    color: black;
+    border-radius: 6px; /* 👈 softer look */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* 👈 subtle depth */
+    padding: 6px 10px; /* 👈 extra breathing room */
+}
+
+.tippy-box[data-theme~='agreeable'] > .tippy-arrow {
+    display: none;
+}
+
+/* Severity-specific colors */
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="none"] {
+    --highlight-color: #00916E;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="low"] {
+    --highlight-color: #FFCF00;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="medium"] {
+    --highlight-color: #EE6123;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="high"] {
+    --highlight-color: #FA003F;
+}

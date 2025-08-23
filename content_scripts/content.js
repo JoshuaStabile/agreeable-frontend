@@ -8,8 +8,6 @@ async function shouldRun() {
         return false;
     } 
 
-    console.log(sensitivity);
-
     // === URL pattern === //
     const urlPatterns = /terms|eula|user[-_ ]agreement|license|legal|tos|conditions/i;
     const urlScore = urlPatterns.test(window.location.href) ? 100 : 0; // scale to 0-100

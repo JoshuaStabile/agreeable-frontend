@@ -19,6 +19,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return true;
 
         case "fetch_llm_response":
+            console.log(message);
+
             get("$customPrompt")
                 .then(customPrompt => {
                     const extensionId = chrome.runtime.id;
@@ -28,8 +30,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         customPrompt,
                         extensionId,
                     });
-
-                    console.log("Sending body:", body);
 
                     return fetch("http://127.0.0.1:8000/review_document", {
                         method: 'POST',
