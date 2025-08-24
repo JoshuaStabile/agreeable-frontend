@@ -75,8 +75,13 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     });
 });
 
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
     assignDefaults();
+
+    // only on install open ula tab
+    if (details.reason === "install") {
+        chrome.tabs.create({ url: "https://agreeable.webbybox.net/eula" });
+    }
 });
 
 function assignDefaults() {

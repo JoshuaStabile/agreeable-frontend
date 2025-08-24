@@ -8,8 +8,15 @@ async function shouldRun() {
         return false;
     } 
 
+    const blockedDomains = ["wikipedia.org", "wikimedia.org", "github.com"];
+    const hostname = window.location.hostname.toLowerCase();
+
+    if (blockedDomains.some(domain => hostname.endsWith(domain))) {
+        return false; // automatically skip
+    }
+
     // === URL pattern === //
-    const urlPatterns = /terms|eula|user[-_ ]agreement|license|legal|tos|conditions/i;
+    const urlPatterns = /terms|eula|user[-_ ]agreement|license|legal|tos|conditions|privacy|policy/i;
     const urlScore = urlPatterns.test(window.location.href) ? 100 : 0; // scale to 0-100
 
     // === Title & heading analysis === //
@@ -20,7 +27,8 @@ async function shouldRun() {
         "user agreement",
         "license agreement",
         "legal information",
-        "eula"
+        "eula",
+        "privacy policy"
     ];
 
     const title = document.title.toLowerCase();
@@ -40,7 +48,8 @@ async function shouldRun() {
     const legalKeywords = [
         "governing law", "binding arbitration", "termination", "warranty", "liability",
         "disclaimer", "intellectual property", "modification of terms", "personal data",
-        "third-party services", "indemnify", "limitations of liability", "jurisdiction"
+        "third-party services", "indemnify", "limitations of liability", "jurisdiction",
+        "permission", "third-party", "policy", "acknowledge"
     ];
 
     let matchCount = 0;
@@ -59,8 +68,7 @@ async function shouldRun() {
         (keywordDensityScore * 0.3)
     );
 
-    console.debug("Final EULA score:", finalScore);
-    console.debug("sensitivity sensitivity:", sensitivity);
+    console.debug(`Agreeable Detection Score: ${finalScore}/${sensitivity}`);
     return finalScore >= sensitivity;
 }
 
