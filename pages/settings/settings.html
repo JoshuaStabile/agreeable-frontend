@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Agreeable – Settings</title>
+    <link rel="stylesheet" href="../popup.css">
+    <link rel="stylesheet" href="./settings.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+</head>
+<body id="popup-body">
+    <header>
+        <div>
+            <div class="app-title">Agreeable</div>
+            <div class="tagline"></div>
+        </div>
+    </header>
+
+    <main>
+        <nav class="quick-links">
+            <a href="#" id="homeLink">Home</a>
+            <a href="#" id="settingsLink" class="selected" >Settings</a>
+            <a href="#" id="donateLink">Donate</a>
+        </nav>
+
+        <div class="setting-group">
+            <label>Automatic agreement detection sensitivity</label>
+            <select id="sensitivity-select">
+                <option value="0">None (Disabled)</option>
+                <option value="90">Low</option>
+                <option value="80">Medium</option>
+                <option value="70">High</option>
+                <option value="50">Very High</option>
+            </select>
+        </div>
+
+        <div class="setting-group">
+            <label>Custom Prompt</label>
+            <textarea id="custom-prompt" placeholder="What should the summary focus on? Please be nice :)"></textarea>
+        </div>
+
+        <button id="reset-extension">Reset Extension</button>
+    </main>
+
+    <footer>
+        <div style="margin:0 auto;text-align:center;">
+            <p>Agreeable - v1.0</p>
+            <p>Contact: <a href="mailto:agreeable.dev@gmail.com">agreeable.dev@gmail.com</a></p>
+        </div>
+        <script src="../quickLinks.js" type="module"></script>
+        <script src="./settings.js" type="module"></script>
+    </footer>
+
+</body>
+</html>

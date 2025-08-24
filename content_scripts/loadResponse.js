@@ -3,15 +3,16 @@ let prevSessionId = "new";
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
         case "load_response":
-            console.log(message.sessionId);
             if (prevSessionId === message.sessionId) {
                 sendResponse({ success: false });
                 return;
             }
             prevSessionId = message.sessionId;
 
-            loadResponse(message.data);
-            sendResponse({ success: true });
+            setTimeout(() => {
+                loadResponse(message.data);
+                sendResponse({ success: true });
+            }, 500);
             break;
 
         case "highlight_text":
@@ -36,24 +37,36 @@ function loadResponse(data) {
         return;
     }
 
-    // Clear previous highlights first if needed
+    // clear prev marks
     const markInstance = new Mark(document.body);
     markInstance.unmark({
         done: () => {
-            // Highlight all texts from LLM response
-            highlights.forEach(({ id, text, summary }) => {
+            highlights.forEach(({ id, text, summary, severity }) => {
                 const cleanHighlightText = cleanText(text);
 
-                markInstance.mark(cleanHighlightText, {
+                // escape regex special characters in the text
+                const escapedText = cleanHighlightText.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+                // Build a regex that ignores punctuation and special chars
+                // \w = word characters, \W = non-word, allow any non-word char between letters
+                const regexStr = escapedText.split("").map(ch => {
+                    if (/\w/.test(ch)) return ch;
+                    return "\\W*"; // match any non-word character 0 or more times
+                }).join("");
+
+                const regex = new RegExp(regexStr, "gi");
+
+                // Highlight using markRegExp
+                markInstance.markRegExp(regex, {
                     className: "agreeable-highlight",
                     separateWordSearch: false,
                     acrossElements: true,
                     each: (element) => {
                         element.setAttribute("data-agreeable-highlight-id", id);
+                        element.setAttribute("data-agreeable-severity", severity);
                     },
                     done: () => {
-                        // Attach tooltip to newly created highlights
-                        attachTooltipToHighlights(summary);
+                        attachTooltipToHighlights(summary, severity);
                     }
                 });
             });
@@ -61,26 +74,28 @@ function loadResponse(data) {
     });
 }
 
-function attachTooltipToHighlights(summary) {
-    document.querySelectorAll('.agreeable-highlight').forEach(el => {
+
+function attachTooltipToHighlights(summary, severity) {
+    document.querySelectorAll(".agreeable-highlight").forEach(el => {
         if (!el._tippy) {
             tippy(el, {
                 content: summary,
                 interactive: true,
-                placement: 'right',
+                placement: "right",
                 maxWidth: 300,
-                trigger: 'mouseenter focus click',  // show on hover & click
-                hideOnClick: true,                   // auto-hide on clicking outside
-                delay: [0, 100],
+                delay: [0, 0],
+                theme: "agreeable",
+                onShow: (instance) => {
+                    el.classList.add("clicked");
+                    
+                    instance.popper
+                        .querySelector(".tippy-box")
+                        .setAttribute("data-agreeable-severity", severity);
+                },
+                onHidden: () => {
+                    el.classList.remove("clicked");
+                }
             });
-
-            el._tippy.props.onShow = () => {
-                el.classList.add('clicked');
-            };
-
-            el._tippy.props.onHidden = () => {
-                el.classList.remove('clicked');
-            };
         }
     });
 }

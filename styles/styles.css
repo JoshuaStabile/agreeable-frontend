@@ -3,11 +3,40 @@ mark.agreeable-highlight {
     color: inherit !important;
     position: relative;
     display: inline-block;
-    z-index: 0; /* ensure it stacks under text */
+    z-index: 0;
     overflow: hidden;
     cursor: pointer;
+
+    /* Default (fallback) */
+    --highlight-color: #FFCF00;
+    --highlight-opacity: 0.4;
 }
 
+/* None = green (#00916E) */
+mark.agreeable-highlight[data-agreeable-severity="helpful"] {
+    --highlight-color: #00916E;
+    --highlight-opacity: 0.4;
+}
+
+/* Low = yellow (#FFCF00) */
+mark.agreeable-highlight[data-agreeable-severity="low"] {
+    --highlight-color: #FFCF00;
+    --highlight-opacity: 0.4;
+}
+
+/* Medium = orange (#EE6123) */
+mark.agreeable-highlight[data-agreeable-severity="medium"] {
+    --highlight-color: #EE6123;
+    --highlight-opacity: 0.4;
+}
+
+/* High = red (#FA003F) */
+mark.agreeable-highlight[data-agreeable-severity="high"] {
+    --highlight-color: #FA003F;
+    --highlight-opacity: 0.4;
+}
+
+/* Highlight background animation */
 mark.agreeable-highlight::before {
     content: '';
     position: absolute;
@@ -15,26 +44,53 @@ mark.agreeable-highlight::before {
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(255, 207, 0, 0.4) !important;
-    z-index: -1; /* so text is on top */
+    background-color: var(--highlight-color);
+    opacity: var(--highlight-opacity);
+    z-index: -1;
     transform: translateX(-100%);
     animation: highlightSweep 1s ease-out forwards;
-    transition: background-color 0.1s ease;
+    animation-fill-mode: forwards;
+    pointer-events: none;
+}
+
+/* Hover only increases opacity */
+mark.agreeable-highlight:not(.clicked):hover::before {
+    opacity: calc(var(--highlight-opacity) + 0.2);
 }
 
 mark.agreeable-highlight.clicked::before {
-    background-color: rgba(255, 207, 0, 0.7) !important;
-    transform: translateX(0%);
-    animation-play-state: paused;
+    opacity: calc(var(--highlight-opacity) + 0.2);
 }
-
-mark.agreeable-highlight:not(.clicked):hover::before {
-    background-color: rgba(255, 207, 0, 0.7) !important;
-}
-
 
 @keyframes highlightSweep {
-    to {
-        transform: translateX(0%);
-    }
+    to { transform: translateX(0%); }
+}
+
+
+/* TIPPY */
+.tippy-box[data-theme~='agreeable'] {
+    background-color: #FEEFE5;  /* base color */
+    border: 2px solid var(--highlight-color, #00916E);
+    color: black;
+    border-radius: 6px; /* 👈 softer look */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* 👈 subtle depth */
+    padding: 6px 10px; /* 👈 extra breathing room */
+}
+
+.tippy-box[data-theme~='agreeable'] > .tippy-arrow {
+    display: none;
+}
+
+/* Severity-specific colors */
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="none"] {
+    --highlight-color: #00916E;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="low"] {
+    --highlight-color: #FFCF00;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="medium"] {
+    --highlight-color: #EE6123;
+}
+.tippy-box[data-theme~='agreeable'][data-agreeable-severity="high"] {
+    --highlight-color: #FA003F;
 }

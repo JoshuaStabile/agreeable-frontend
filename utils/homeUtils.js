@@ -1,61 +1,25 @@
 import { sendContentMessage } from "./chromeUtils.js";
 
 const summaryContainer = document.getElementById("summary-container");
-const statusElm = document.getElementById("statusText");
-const body = document.getElementById('popup-body');
-const expandBtn = document.getElementById('expandBtn');
-const reviewBtn = document.getElementById('reviewBtn');
-const freeSelectBtn = document.getElementById('freeSelectBtn');
-
-export function full() {
-    body.classList.remove('compact');
-    body.classList.add('full');
-
-    freeSelectBtn.style.display = "block";
-    reviewBtn.style.display = "block"; // always show
-    expandBtn.style.display = "none";
-}
-
-export function compact() {
-    body.classList.remove('full');
-    body.classList.add('compact');
-
-    freeSelectBtn.style.display = "none";
-    reviewBtn.style.display = "block"; // always show
-    expandBtn.style.display = "block";   
-}
 
 export function getPopupText(data) {
     return `
-        <b>Main Summary:</b>
+        <div class="text-center"><b>Main Summary</b></div>
         <p>${data.mainSummary || 'No Summary'}</p>
 
         <br />
-        <b>Highlights:</b>
+        <div class="text-center"><b>Highlights</b></div>
         <ol>
         ${
-            (data.highlights || [])
-            .map(highlight => `
-                <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}">${highlight.summary || ''}</li>
+            data.highlights && data.highlights.length > 0 ? 
+            data.highlights.map(highlight => `
+                <li class="agreeable-highlight-item" data-agreeable-highlight-id="${highlight.id}" data-agreeable-severity=${highlight.severity}>${highlight.summary || ''}</li>
             `)
             .join('')
+            : "No Highlights"
         }
         </ol>
     `;
-}
-
-export function safeJsonParse(str) {
-    try {
-        // Remove markdown code fences if they slip in
-        const cleanStr = str
-            .replace(/```json/gi, '')
-            .replace(/```/g, '')
-            .trim();
-        return JSON.parse(cleanStr);
-    } catch (e) {
-        console.error("JSON parse error:", e, str);
-        return null;
-    }
 }
 
 export function writeToSummaryContainer(html, scroll = true) {

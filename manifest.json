@@ -1,10 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "Agreeable: AI Document Summarizer",
+  "name": "Agreeable",
   "version": "1.0",
   "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
-
+  "icons": {
+    "128": "./icons/agreeable-icon-128.png"
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -13,7 +15,7 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "./scripts/loadResponse.js", "./scripts/loadDocument.js", "./scripts/content.js", "./scripts/freeSelect.js",
+        "./content_scripts/loadResponse.js", "./content_scripts/loadDocument.js", "./content_scripts/content.js", "./content_scripts/freeSelect.js",
 
         "./libs/Readability.js", "./libs/mark.min.js", "./libs/popper.min.js", "./libs/tippy-bundle.umd.min.js"
       ],
@@ -21,8 +23,14 @@
       "css": ["./styles/styles.css"]
     }
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["./utils/chromeUtils.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
   "action": {
-    "default_popup": "./popup/popup.html",
+    "default_popup": "./pages/home/home.html",
     "default_title": "Agreeable"
   }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Agreeable – Settings</title>
+    <link rel="stylesheet" href="../popup.css">
+    <link rel="stylesheet" href="./donate.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+</head>
+<body id="popup-body">
+    <header>
+        <div>
+            <div class="app-title">Agreeable</div>
+            <div class="tagline"></div>
+        </div>
+    </header>
+
+    <main>
+        <nav class="quick-links">
+            <a href="#" id="homeLink">Home</a>
+            <a href="#" id="settingsLink">Settings</a>
+            <a href="#" id="donateLink" class="selected" >Donate</a>
+        </nav>
+
+        <div class="message-container">
+            <p>
+                This is a little project I made to learn more about LLMs. 
+                It will always be free for anyone to use. 
+                I am allotting some of my moneys to this each month so the AI does not evict me. 
+            </p>
+            <br />
+            <p>
+                If you find this useful, consider paying my token debt by clicking the link below.
+            </p>
+        </div>
+
+        <div class="donation-links">
+            <a href="https://ko-fi.com/agreeableapp" target="_blank" class="donation-link">
+                <i class="fas fa-coffee"></i> Ko-fi
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        <div style="margin:0 auto;text-align:center;">
+            <p>Agreeable - v1.0</p>
+            <p>Contact: <a href="mailto:agreeable.dev@gmail.com">agreeable.dev@gmail.com</a></p>
+        </div>
+        
+        <script src="../quickLinks.js" type="module"></script>
+        <script src="./donate.js" type="module"></script>
+    </footer>
+
+</body>
+</html>

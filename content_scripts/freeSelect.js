@@ -24,6 +24,8 @@ document.addEventListener("mouseup", () => {
 
     freeSelectActive = false;
     
+    window.getSelection().removeAllRanges();
+
     // store selected text
     chrome.storage.local.set({ documentData } );
     chrome.runtime.sendMessage({ action: "open_popup" });

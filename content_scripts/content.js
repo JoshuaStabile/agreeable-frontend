@@ -1,9 +1,16 @@
-function shouldRun() {
-    const threshold = 0.75;
+async function shouldRun() {
+    const result = await new Promise((resolve) => {
+        chrome.storage.local.get("$sensitivity", resolve);
+    });
+
+    const sensitivity = result["$sensitivity"];
+    if (!sensitivity) {
+        return false;
+    } 
 
     // === URL pattern === //
     const urlPatterns = /terms|eula|user[-_ ]agreement|license|legal|tos|conditions/i;
-    const urlScore = urlPatterns.test(window.location.href) ? 1 : 0;
+    const urlScore = urlPatterns.test(window.location.href) ? 100 : 0; // scale to 0-100
 
     // === Title & heading analysis === //
     const headingKeywords = [
@@ -23,7 +30,7 @@ function shouldRun() {
     let titleScore = 0;
     for (let keyword of headingKeywords) {
         if (title.includes(keyword) || h1.includes(keyword) || h2.includes(keyword)) {
-            titleScore = 1;
+            titleScore = 100; // scale to 0-100
             break;
         }
     }
@@ -43,27 +50,31 @@ function shouldRun() {
         }
     }
 
-    const keywordDensityScore = matchCount / legalKeywords.length;
+    const keywordDensityScore = (matchCount / legalKeywords.length) * 100; // scale to 0-100
 
     // === Weighted scoring === //
-    const finalScore = (
+    const finalScore = Math.round(
         (urlScore * 0.4) +
         (titleScore * 0.3) +
         (keywordDensityScore * 0.3)
     );
 
-    console.debug("Final EULA score:", finalScore.toFixed(2));
-    return finalScore >= threshold;
+    console.debug("Final EULA score:", finalScore);
+    console.debug("sensitivity sensitivity:", sensitivity);
+    return finalScore >= sensitivity;
 }
 
-window.addEventListener("load", () => {
+
+window.addEventListener("load", async () => {
+    const agreementDetected = await shouldRun();
+
     // check if the program should even run
-    if (!shouldRun()) {
+    if (!agreementDetected) {
         return;
     }
-
+    
     loadDocument();
 
     // open popup
-    chrome.runtime.sendMessage({ action: "open_popup", mode: "compact" });
+    chrome.runtime.sendMessage({ action: "open_popup" });
 });
