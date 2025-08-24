@@ -28,6 +28,7 @@ resetBtn.addEventListener("click", () => {
     if (confirm("Are you sure you want to reset the extension? All settings will be lost.")) {
         chrome.runtime.sendMessage({ action: "reset" }, (response) => {
             if (response?.success) {
+                alert("Extension reset successfully.");
                 window.location.reload();
             } else {
                 alert("Failed to reset extension.");
