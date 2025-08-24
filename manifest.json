@@ -5,7 +5,7 @@
   "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
   "icons": {
-    "128": "./icons/agreeable-icon-128.png"
+    "128": "icons/agreeable-icon-128.png"
   },
   "background": {
     "service_worker": "background.js",
@@ -15,22 +15,22 @@
     {
       "matches": ["<all_urls>"],
       "js": [
-        "./content_scripts/loadResponse.js", "./content_scripts/loadDocument.js", "./content_scripts/content.js", "./content_scripts/freeSelect.js",
+        "content_scripts/loadResponse.js", "content_scripts/loadDocument.js", "content_scripts/content.js", "content_scripts/freeSelect.js",
 
-        "./libs/Readability.js", "./libs/mark.min.js", "./libs/popper.min.js", "./libs/tippy-bundle.umd.min.js"
+        "libs/Readability.js", "libs/mark.min.js", "libs/popper.min.js", "libs/tippy-bundle.umd.min.js"
       ],
       "run_at": "document_idle",
-      "css": ["./styles/styles.css"]
+      "css": ["styles/styles.css"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["./utils/chromeUtils.js"],
+      "resources": ["utils/chromeUtils.js"],
       "matches": ["<all_urls>"]
     }
   ],
   "action": {
-    "default_popup": "./pages/home/home.html",
+    "default_popup": "pages/home/home.html",
     "default_title": "Agreeable"
   }
 }
