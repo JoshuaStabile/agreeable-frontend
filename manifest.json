@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Agreeable",
   "version": "1.0",
-  "permissions": ["scripting", "activeTab", "storage"],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
   "icons": {
     "128": "icons/agreeable-icon-128.png"
