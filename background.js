@@ -1,4 +1,6 @@
-import { get, set } from "./utils/chromeUtils.js";
+import { get, set, setOutputCache, removeFromStorage } from "./utils/chromeUtils.js";
+import { safeJsonParse } from "../../utils/llmUtils.js";
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.debug(message.action);
 
@@ -19,40 +21,47 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             return true;
 
         case "fetch_llm_response":
-            console.log(message);
+        (async () => {
+            try {
+                await set("inProgress", true);
 
-            get("$customPrompt")
-                .then(customPrompt => {
-                    const extensionId = chrome.runtime.id;
+                const customPrompt = await get("$customPrompt");
+                const extensionId = chrome.runtime.id;
 
-                    let body = JSON.stringify({ 
-                        text: message.data,
-                        customPrompt,
-                        extensionId,
-                    });
+                const body = JSON.stringify({ text: message.data, customPrompt, extensionId });
 
-                    return fetch("http://127.0.0.1:8000/review_document", {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body
-                    });
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.text().then(text => { 
-                            throw new Error(`HTTP ${response.status}: ${text}`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => sendResponse({ success: true, result: data }))
-                .catch(error => {
-                    console.error("Error during fetch:", error);
-                    sendResponse({ success: false, error: error.toString() });
+                const response = await fetch("https://agreeable.webbybox.net/review_document", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body
                 });
 
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${text}`);
+                }
 
-            return true; // keep async
+                set("sessionId", crypto.randomUUID());
+
+                const data = await response.json();
+
+                // parse, store, and remove documentData here
+                // do this all in background script so it will save response even if use closes the popup
+                const parsedData = safeJsonParse(data);
+                setOutputCache(parsedData);
+                await removeFromStorage("documentData");
+
+                await set("inProgress", false);
+                chrome.runtime.sendMessage({ action: "reviewFinished", result: parsedData });
+                sendResponse({ success: true, result: parsedData });
+            } catch (error) {
+                console.error("Error during fetch:", error);
+                await set("inProgress", false);
+                sendResponse({ success: false, error: error.toString() });
+            }
+        })();
+
+        return true; // keep async
     }
 });
 

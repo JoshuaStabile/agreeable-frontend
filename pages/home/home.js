@@ -1,6 +1,11 @@
 import { sendContentMessage, sendBackgroundMessage, get, set, getOutputCache, setOutputCache, removeFromStorage } from "../../utils/chromeUtils.js";
-import { safeJsonParse, getPopupText, writeToSummaryContainer } from "../../utils/homeUtils.js";
+import { getPopupText, writeToSummaryContainer } from "../../utils/homeUtils.js";
 
+chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === "reviewFinished") {
+        showFinishedState(message.result);
+    }
+});
 
 const statusElm = document.getElementById("statusText");
 const reviewBtn = document.getElementById('reviewBtn');
@@ -14,24 +19,10 @@ async function startFreeSelect() {
 
 async function reviewDocument() {
     console.debug("reviewDocument started");
-    
-    // show thinking state
-    writeToSummaryContainer(`
-        <div class="ai-thinking">
-            <span>AI reviewing document</span>
-            <div class="thinking-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    `, false);
-
-    statusElm.textContent = "";
+    showThinkingState();
 
     try {
         let documentData = await get("documentData");
-        
         if (!documentData) {
             console.debug("No document data found in storage, requesting load_document");
             try {
@@ -40,36 +31,19 @@ async function reviewDocument() {
                 console.debug("Received document data from content script");
             }
             catch (e) {
-                error("No relevant EULA or agreement found", e.message);
+                showError("No relevant EULA or agreement found", e.message);
                 return;
             }
         }
-        let documentText = documentData.text;
-        console.log(documentText);
-        
+
         console.debug("Sending document text to background for review");
-        const reviewResponse = await sendBackgroundMessage("fetch_llm_response", documentText);
+        const reviewResponse = await sendBackgroundMessage("fetch_llm_response", documentData.text);
 
-        if (reviewResponse?.success) {
-            // set new session after each successful review
-            set("sessionId", crypto.randomUUID());
-
-            console.debug("Received successful review response");
-            const parsedData = safeJsonParse(reviewResponse.result);
-            const popupText = getPopupText(parsedData);
-            writeToSummaryContainer(popupText);
-
-            sendContentMessage("load_response", parsedData);
-            setOutputCache(parsedData);
-            await removeFromStorage("documentData");
-            statusElm.textContent = "Analysis complete";
-        } else {
-            error("An error occurred when generating the LLM response", reviewResponse?.error)
+        if (!reviewResponse?.success) {
+            showError("An error occurred when generating the LLM response", reviewResponse?.error);
         }
     } catch (err) {
-        console.error("Error in reviewDocument:", err);
-        writeToSummaryContainer(`Error: ${err.message || err}`);
-        statusElm.textContent = "";
+        showError(`Error: ${err.message || err}`, err);
     }
 }
 
@@ -84,33 +58,75 @@ reviewBtn.addEventListener("click", () => {
     reviewDocument();
 });
 
+function showReadyState(documentData) {
+    reviewBtn.disabled = false;
+
+    if (!documentData) {
+        statusElm.textContent = "Ready to review";
+        return;
+    }
+
+    if (documentData.src === "freeSelect") {
+        statusElm.innerHTML = `Ready to review <i>selected text</i>`;
+    } else {
+        statusElm.innerHTML = `Ready to review <i>page</i>`;
+    }
+}
+
+function showThinkingState() {
+    writeToSummaryContainer(`
+        <div class="ai-thinking">
+            <span>AI reviewing document</span>
+            <div class="thinking-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    `, false);
+    statusElm.textContent = "Analysis in progress…";
+
+    reviewBtn.disabled = true;
+}
+
+function showFinishedState(popupData) {
+    writeToSummaryContainer(getPopupText(popupData), false);
+    statusElm.innerHTML = "Review finished";
+
+    sendContentMessage("load_response", popupData);
+    reviewBtn.disabled = false;
+}
+
+function showError(message, log) {
+    reviewBtn.disabled = false;
+
+    console.debug("Agreeable error:", log);
+    writeToSummaryContainer(message);
+    statusElm.textContent = "A problem has occurred";
+}
+
+
 async function home() {
     console.debug("Initializing popup");
 
+    const inProgress = await get("inProgress");
+    if (inProgress) {
+        showThinkingState();
+        return;
+    }
+
     const popupData = await getOutputCache();
-    console.debug("Popup data retrieved:", popupData);
     if (popupData) {
-        statusElm.innerHTML = `Review finished`;
-        writeToSummaryContainer(getPopupText(popupData), false);
-        sendContentMessage("load_response", popupData );
+        console.debug("Popup data retrieved:", popupData);
+        showFinishedState(popupData);
+        sendContentMessage("load_response", popupData);
     }
 
     const documentData = await get("documentData");
     if (documentData) {
-        if (documentData.src === "freeSelect") {
-            statusElm.innerHTML = `Ready to review <i>selected text</i>`;
-        } else {
-            statusElm.innerHTML = `Ready to review <i>page</i>`;
-        }
-        
+        showReadyState(documentData);
         console.debug("Document text found in storage at init");
-    } 
-}
-
-function error(message, log) {
-    console.debug("Agreeable error: ", log);
-    writeToSummaryContainer(message);
-    statusElm.textContent = "A problem has occurred";
+    }
 }
 
 home();

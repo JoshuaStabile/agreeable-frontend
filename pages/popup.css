@@ -74,8 +74,6 @@ footer {
     z-index: 1;
 }
 
-
-
 /* Button styles */
 .btn-primary {
     background: #00916E 0%;
@@ -89,8 +87,6 @@ footer {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
-
-
 
 .btn-primary::before {
     content: '';
@@ -110,6 +106,20 @@ footer {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 145, 110, 0.3);
+}
+
+/* Disabled button */
+.btn-primary:disabled {
+    background: #66A28A;          /* muted green */
+    color: #DDE3DB;               /* lighter text */
+    cursor: not-allowed;          /* not-allowed cursor */
+    box-shadow: none;             /* remove hover shadow */
+    transform: none;              /* remove hover translate */
+}
+
+/* Disable hover effect for disabled */
+.btn-primary:disabled::before {
+    display: none;
 }
 
 .btn-secondary {
@@ -206,8 +216,6 @@ body main {
     pointer-events: all;
 }
 
-
-
 body footer {
     padding: 1.25rem 1.5rem;
     justify-content: space-between;
@@ -222,18 +230,18 @@ body .app-title {
     color: rgba(254, 239, 229, 0.9);
     font-weight: 400;
     margin-top: 0.25rem;
-    transform: translateY(-10px);
-}
-
-body .tagline {
-    transform: translateY(0);
 }
 
 header, footer {
     height: 80px;              /* force equal height */
-    display: flex;
     align-items: center;       /* vertical centering */
     justify-content: center;   /* horizontal centering (or space-between for footer buttons) */
     padding: 0;                /* remove padding since height is fixed */
     box-sizing: border-box;    /* keep borders inside height */
+}
+
+.text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

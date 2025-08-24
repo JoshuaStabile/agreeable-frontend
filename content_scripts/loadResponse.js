@@ -9,8 +9,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             prevSessionId = message.sessionId;
 
-            loadResponse(message.data);
-            sendResponse({ success: true });
+            setTimeout(() => {
+                loadResponse(message.data);
+                sendResponse({ success: true });
+            }, 500);
             break;
 
         case "highlight_text":

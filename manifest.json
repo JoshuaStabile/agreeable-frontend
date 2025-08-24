@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Agreeable: AI Document Summarizer",
+  "name": "Agreeable",
   "version": "1.0",
   "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],

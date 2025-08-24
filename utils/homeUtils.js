@@ -4,11 +4,11 @@ const summaryContainer = document.getElementById("summary-container");
 
 export function getPopupText(data) {
     return `
-        <b>Main Summary:</b>
+        <div class="text-center"><b>Main Summary</b></div>
         <p>${data.mainSummary || 'No Summary'}</p>
 
         <br />
-        <b>Highlights:</b>
+        <div class="text-center"><b>Highlights</b></div>
         <ol>
         ${
             data.highlights && data.highlights.length > 0 ? 
@@ -20,20 +20,6 @@ export function getPopupText(data) {
         }
         </ol>
     `;
-}
-
-export function safeJsonParse(str) {
-    try {
-        // Remove markdown code fences if they slip in
-        const cleanStr = str
-            .replace(/```json/gi, '')
-            .replace(/```/g, '')
-            .trim();
-        return JSON.parse(cleanStr);
-    } catch (e) {
-        console.error("JSON parse error:", e, str);
-        return null;
-    }
 }
 
 export function writeToSummaryContainer(html, scroll = true) {
