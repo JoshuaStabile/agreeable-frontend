@@ -21,7 +21,8 @@ sensitivitySelect.addEventListener("change", async () => {
 });
 
 customPromptTextarea.addEventListener("input", async () => {
-    await set("$customPrompt", customPromptTextarea.value);
+    // save up to 256 chars
+    await set("$customPrompt", customPromptTextarea.value.slice(0, 256));
 });
 
 resetBtn.addEventListener("click", () => {
